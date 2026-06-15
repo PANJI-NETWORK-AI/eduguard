@@ -1,7 +1,7 @@
 """
 ===========================================================================
 Aplikasi: EduGuard-AI - Early Warning System (RAKERNAS IndoCEISS 2026)
-Pengembang: Mahasiswa Palcomtech
+Pengembang: [Tulis Nama Kamu di Sini]
 Deskripsi: Sistem diagnostik performa siswa berbasis Longitudinal Behavioral 
            Analytics dan ZPD (Zone of Proximal Development).
 ===========================================================================
@@ -10,12 +10,14 @@ Deskripsi: Sistem diagnostik performa siswa berbasis Longitudinal Behavioral
 import streamlit as st
 import pandas as pd
 import plotly.express as px
+import numpy as np
 from langchain_openai import ChatOpenAI
 
 # --------------------------------------------------------------------------
 # INSTRUKSI PENGGUNAAN (Untuk Juri/Dosen)
 # Aplikasi ini menggunakan OpenRouter sebagai gateway AI.
-# OPENROUTER_API_KEY 
+# Pastikan di secrets.toml kamu kuncinya: 
+# OPENROUTER_API_KEY = "sk-or-v1-isi_kunci_api_kamu_di_sini"
 # --------------------------------------------------------------------------
 
 st.set_page_config(page_title="EduGuard-AI: Scientific Dashboard", layout="wide")
@@ -27,20 +29,27 @@ except KeyError:
     st.error("⚠️ API Key tidak ditemukan. Pastikan 'OPENROUTER_API_KEY' sudah terkonfigurasi di Streamlit Secrets.")
     st.stop()
 
-# Inisialisasi Model melalui OpenRouter
+# Inisialisasi Model
 llm = ChatOpenAI(
     openai_api_key=api_key,
     openai_api_base="https://openrouter.ai/api/v1",
     model_name="meta-llama/llama-3-8b-instruct"
 )
 
-# 1. LOGIKA ILMIAH: Klasifikasi Performa (Berdasarkan Riset Li & Chen, 2025)
+# 1. GENERASI DATA DUMMY (100 Siswa untuk Skalabilitas)
+@st.cache_data
+def generate_student_data():
+    np.random.seed(42)
+    return pd.DataFrame({
+        "Nama": [f"Siswa {i+1}" for i in range(100)],
+        "Normalized_Gain": np.random.uniform(0.1, 0.9, 100),
+        "Cognitive_Load": np.random.uniform(0.1, 0.9, 100)
+    })
+
+df = generate_student_data()
+
+# 2. LOGIKA ILMIAH (Berdasarkan Li & Chen, 2025)
 def classify_student_status(normalized_gain, cognitive_load):
-    """
-    Mengimplementasikan logika threshold untuk deteksi dini (Early Warning System).
-    - Threshold 0.51: Optimal untuk strategi Hybrid Context-Aware.
-    - Threshold 0.35: Batas performa stagnan.
-    """
     if normalized_gain >= 0.51:
         return "Optimal ZPD", "Berikan tantangan lebih tinggi (Adaptive Scaffolding)"
     elif 0.35 <= normalized_gain < 0.51:
@@ -50,35 +59,37 @@ def classify_student_status(normalized_gain, cognitive_load):
     else:
         return "Low Engagement", "Intervensi: Notifikasi Guru (Human-in-the-Loop)"
 
-# 2. ANTARMUKA DASHBOARD
+# 3. ANTARMUKA DASHBOARD
 st.title("🛡️ EduGuard-AI: Early Warning System")
 st.markdown("Sistem pemantauan longitudinal untuk efektivitas belajar siswa.")
 
-# Input parameter untuk simulasi diagnosis
-col1, col2 = st.columns(2)
-with col1:
-    gain = st.slider("Normalized Gain (0.0 - 1.0)", 0.0, 1.0, 0.4)
-with col2:
-    load = st.slider("Cognitive Load (0.0 - 1.0)", 0.0, 1.0, 0.6)
+# Tampilan Tabel Data
+st.subheader("📋 Data Performa Siswa (100 Siswa)")
+edited_df = st.data_editor(df, use_container_width=True)
 
-# Hasil Diagnosa Ilmiah
-status, rekomendasi = classify_student_status(gain, load)
-st.metric("Profil Kognitif", status)
-st.info(f"Rekomendasi Strategi: {rekomendasi}")
-
-# 3. ADVISOR AGENT (Intervensi AI)
+# 4. ADVISOR AGENT (Intervensi AI Berbasis Diagnosis)
 st.subheader("🤖 AI Advisor (Scientific Diagnostic)")
+target_siswa = st.selectbox("Pilih siswa untuk dianalisis:", edited_df["Nama"].tolist())
+
 if st.button("Generate Laporan Diagnostik"):
-    prompt = (f"Anda adalah sistem AI diagnostik pendidikan. Analisis siswa dengan "
-              f"Normalized Gain {gain} dan Cognitive Load {load}. "
-              f"Status klasifikasi: {status}. "
-              f"Berdasarkan standar Longitudinal Behavioral Analytics, berikan "
-              f"strategi intervensi yang tepat secara ilmiah.")
+    siswa_row = edited_df[edited_df["Nama"] == target_siswa].iloc[0]
+    status, rekomendasi = classify_student_status(siswa_row["Normalized_Gain"], siswa_row["Cognitive_Load"])
     
-    with st.spinner("Menganalisis data longitudinal..."):
+    prompt = (f"Analisis siswa {target_siswa}. Data: Gain {siswa_row['Normalized_Gain']:.2f}, "
+              f"Load {siswa_row['Cognitive_Load']:.2f}. Status: {status}. "
+              f"Berikan rekomendasi intervensi taktis berdasarkan pendekatan pendidikan modern.")
+    
+    with st.spinner("Menganalisis data longitudinal siswa..."):
         response = llm.invoke(prompt)
+        st.info(f"**Profil:** {status} | **Saran:** {rekomendasi}")
         st.write(response.content)
 
-# 4. KREDIT PENGEMBANG
+# 5. Visualisasi
+st.subheader("📊 Visualisasi Performa Siswa")
+fig = px.scatter(edited_df, x="Normalized_Gain", y="Cognitive_Load", color="Normalized_Gain", 
+                 hover_data=["Nama"], title="Distribusi Kognitif 100 Siswa")
+st.plotly_chart(fig, use_container_width=True)
+
+# 6. KREDIT PENGEMBANG
 st.markdown("---")
-st.caption("Dikembangkan oleh [Tim Mahasasiswa Palcomtech] | RAKERNAS IndoCEISS 2026")
+st.caption("Dikembangkan oleh [Tulis Nama Kamu di Sini] | RAKERNAS IndoCEISS 2026")
