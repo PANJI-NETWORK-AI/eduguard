@@ -16,11 +16,9 @@ st.set_page_config(
 # Custom Styling agar tampilan rapi & profesional
 st.markdown("""
     <style>
-    .main { background-color: #f8f9fa; }
-    .stMetric { background-color: #ffffff; padding: 15px; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-    .advisor-box { background-color: #e9ecef; padding: 20px; border-radius: 10px; border-left: 5px solid #007bff; margin-top: 10px; }
+    /* Kode CSS kustom dashboard EduGuard kamu di sini */
     </style>
-""", unsafe_allowed_html=True)
+""", unsafe_allow_html=True)
 
 # Title & Deskripsi Proyek
 st.title("🛡️ EduGuard-AI Dashboard")
