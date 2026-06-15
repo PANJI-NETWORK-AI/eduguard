@@ -1,7 +1,7 @@
 """
 ===========================================================================
 Aplikasi: EduGuard-AI - Early Warning System (RAKERNAS IndoCEISS 2026)
-Pengembang: [Tulis Nama Kamu di Sini]
+Pengembang: Mahasiswa
 Deskripsi: Sistem diagnostik performa siswa berbasis Longitudinal Behavioral 
            Analytics dan ZPD (Zone of Proximal Development).
 ===========================================================================
@@ -92,4 +92,4 @@ st.plotly_chart(fig, use_container_width=True)
 
 # 6. KREDIT PENGEMBANG
 st.markdown("---")
-st.caption("Dikembangkan oleh [Tulis Nama Kamu di Sini] | RAKERNAS IndoCEISS 2026")
+st.caption("Dikembangkan oleh [Mahasiswa Palcomtech] | RAKERNAS IndoCEISS 2026")
