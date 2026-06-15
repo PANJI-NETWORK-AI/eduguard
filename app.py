@@ -1,28 +1,33 @@
 import streamlit as st
 import openai
 
-# 1. Pastikan Secrets sudah mengarah ke OPENROUTER_API_KEY nanti
-OPENROUTER_API_KEY = st.secrets["OPENROUTER_API_KEY"]
+# Pindahkan inisialisasi client ke dalam fungsi atau setelah elemen UI dasar dimuat
+def dapatkan_client_ai():
+    try:
+        # Mengambil key dari Streamlit Secrets
+        api_key = st.secrets["OPENROUTER_API_KEY"]
+        
+        return openai.OpenAI(
+            base_url="https://openrouter.ai/api/v1",
+            api_key=api_key,
+        )
+    except Exception as e:
+        st.error(f"Gagal menghubungkan AI: {e}")
+        return None
 
-# 2. Setup client OpenRouter
-client = openai.OpenAI(
-    base_url="https://openrouter.ai/api/v1",
-    api_key=OPENROUTER_API_KEY,
-)
+# --- BAGIAN UI UTAMA (Ditaruh di atas agar halaman tidak blank) ---
+st.set_page_config(page_title="EduGuard-AI Dashboard", layout="wide")
+st.title("🛡️ EduGuard-AI Dashboard")
+st.subheader("Sistem Analisis Progres Belajar Siswa")
 
-# 3. Fungsi analisis data siswa pakai Nvidia Nemotron 3 Ultra (Gratis)
-def analisa_kesulitan_belajar(data_progres_siswa):
-    response = client.chat.completions.create(
-        model="nvidia/nemotron-3-ultra:free",  # Pakai model gratis spek dewa
-        messages=[
-            {
-                "role": "system",
-                "content": "Anda adalah AI pakar psikologi pendidikan. Analisis data siswa berikut untuk menentukan Zone of Proximal Development (ZPD) dan tingkat beban kognitif mereka."
-            },
-            {
-                "role": "user",
-                "content": f"Berikut data aktivitas belajar siswa: {data_progres_siswa}"
-            }
-        ]
-    )
-    return response.choices[0].message.content
+# Panggil client-nya di sini
+client = dapatkan_client_ai()
+
+# Contoh input atau tombol yang kamu punya di dashboard
+if client:
+    st.success("Koneksi ke server AI OpenRouter Berhasil!")
+    
+    # Taruh sisa logika dashboard kamu di bawah sini...
+    # (Contoh: tombol analisis, pemanggilan model nvidia/nemotron-3-ultra:free, dll)
+else:
+    st.warning("Silakan periksa kembali konfigurasi OPENROUTER_API_KEY di menu Secrets.")
