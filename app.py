@@ -1,7 +1,7 @@
 """
 ===========================================================================
-Aplikasi: EduGuard-AI - Early Warning System (RAKERNAS IndoCEISS 2026)
-Pengembang: Mahasiswa
+Aplikasi: Sistem Deteksi Dini Kesulitan Belajar
+Pengembang: Mahasiswa Palcomtech
 Deskripsi: Sistem diagnostik performa siswa berbasis Longitudinal Behavioral 
            Analytics dan ZPD (Zone of Proximal Development).
 ===========================================================================
@@ -17,7 +17,7 @@ from langchain_openai import ChatOpenAI
 # INSTRUKSI PENGGUNAAN (Untuk Juri/Dosen)
 # Aplikasi ini menggunakan OpenRouter sebagai gateway AI.
 # Pastikan di secrets.toml kamu kuncinya: 
-# OPENROUTER_API_KEY = "sk-or-v1-isi_kunci_api_kamu_di_sini"
+# OPENROUTER_API_KEY = "Masukkan API Asli"
 # --------------------------------------------------------------------------
 
 st.set_page_config(page_title="EduGuard-AI: Scientific Dashboard", layout="wide")
@@ -60,7 +60,7 @@ def classify_student_status(normalized_gain, cognitive_load):
         return "Low Engagement", "Intervensi: Notifikasi Guru (Human-in-the-Loop)"
 
 # 3. ANTARMUKA DASHBOARD
-st.title("🛡️ EduGuard-AI: Early Warning System")
+st.title("🛡️ EduGuard-AI: Sistem Deteksi Dini Kesulitan Belajar")
 st.markdown("Sistem pemantauan longitudinal untuk efektivitas belajar siswa.")
 
 # Tampilan Tabel Data
@@ -92,4 +92,4 @@ st.plotly_chart(fig, use_container_width=True)
 
 # 6. KREDIT PENGEMBANG
 st.markdown("---")
-st.caption("Dikembangkan oleh [Mahasiswa Palcomtech] | RAKERNAS IndoCEISS 2026")
+st.caption("Dikembangkan oleh [Mahasiswa Palcomtech]")
